@@ -7,8 +7,8 @@ class UserProvider extends ChangeNotifier{
   String? _token;
 
   /// set USer
-  void setUser(UserModel model){
-    _userModel = model;
+  void setUser(UserModel val){
+    _userModel = val;
     notifyListeners();
 
 }

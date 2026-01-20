@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sec8_apis/provider/user_token_provider.dart';
-import 'package:flutter_sec8_apis/services/auth.dart';
+import 'package:flutter_sec8_apis/views/get_profile.dart';
 import 'package:flutter_sec8_apis/views/register.dart';
 import 'package:provider/provider.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+import '../provider/user_token_provider.dart';
+import '../services/auth.dart';
+
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController pwdController = TextEditingController();
   bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     var userProvider = Provider.of<UserProvider>(context);
@@ -24,41 +27,86 @@ class _LoginState extends State<Login> {
       ),
       body: Column(
         children: [
-          TextField(controller: emailController,),
-          TextField(controller: passwordController,),
-          isLoading ? Center( child: CircularProgressIndicator(),)
-              :ElevatedButton(onPressed: ()async{
-                try{
-                 await AuthServices().loginUser(
-                     email: emailController.text,
-                     password: passwordController.text)
-                     .then((val)async{
-                       userProvider.setToken(val.token.toString());
-                       await AuthServices().getProfile(val.token.toString())
-                       .then((userData){
-                         showDialog(context: context, builder: (BuildContext context) {
-                           return AlertDialog(
-                             content: Text("Register Successfully"),
-                             actions: [
-                               TextButton(onPressed: (){
-                                 Navigator.pop(context);
-                                 Navigator.pop(context);
-                               }, child: Text("Okay"))
-                             ],
-                           );
-                         }, );
-                       });
-                 });
-                }catch(e){
+          TextField(
+            controller: emailController,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          TextField(
+            controller: pwdController,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          isLoading
+              ? Center(
+            child: CircularProgressIndicator(),
+          )
+              : ElevatedButton(
+              onPressed: () async {
+                if (emailController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Email cannot be empty.")));
+                  return;
+                }
+                if (pwdController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Password cannot be empty.")));
+                  return;
+                }
+                try {
+                  isLoading = true;
+                  setState(() {});
+                  await AuthServices()
+                      .loginUser(
+                      email: emailController.text,
+                      password: pwdController.text)
+                      .then((val) async {
+                    userProvider.setToken(val.token.toString());
+                    await AuthServices()
+                        .getProfile(val.token.toString())
+                        .then((userData) {
+                      isLoading = false;
+                      setState(() {});
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text("Message"),
+                              content: Text(userData.user!.name.toString()),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GetProfile()));
+                                    },
+                                    child: Text("Okay"))
+                              ],
+                            );
+                          });
+                    });
+                  });
+                } catch (e) {
                   isLoading = false;
                   setState(() {});
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text(e.toString())));
                 }
-          }, child: Text("Login")),
-          ElevatedButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> Register()));
-          }, child: Text("Register"))
+              },
+              child: Text("Login")),
+          SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Register()));
+              },
+              child: Text("Go to Register"))
         ],
       ),
     );
