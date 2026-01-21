@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sec8_apis/views/get_all_task.dart';
 import 'package:flutter_sec8_apis/views/get_profile.dart';
 import 'package:flutter_sec8_apis/views/register.dart';
 import 'package:provider/provider.dart';
@@ -82,7 +83,7 @@ class _LoginViewState extends State<LoginView> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  GetProfile()));
+                                                  GetAllTask()));
                                     },
                                     child: Text("Okay"))
                               ],
