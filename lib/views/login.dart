@@ -68,6 +68,7 @@ class _LoginViewState extends State<LoginView> {
                     await AuthServices()
                         .getProfile(val.token.toString())
                         .then((userData) {
+                          userProvider.setUser(userData);
                       isLoading = false;
                       setState(() {});
                       showDialog(

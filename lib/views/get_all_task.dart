@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sec8_apis/models/task.dart';
 import 'package:flutter_sec8_apis/models/taskListing.dart';
 import 'package:flutter_sec8_apis/services/task.dart';
+import 'package:flutter_sec8_apis/views/create_task.dart';
+import 'package:flutter_sec8_apis/views/filter_task.dart';
+import 'package:flutter_sec8_apis/views/get_completed_task.dart';
+import 'package:flutter_sec8_apis/views/get_inCompleted_Task.dart';
+import 'package:flutter_sec8_apis/views/get_profile.dart';
+import 'package:flutter_sec8_apis/views/search_task.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/user_token_provider.dart';
@@ -15,10 +21,30 @@ class GetAllTask extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Get All Task"),
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> SearchTask()));
+          }, icon: Icon(Icons.search)),
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> FilterTask()));
+          }, icon: Icon(Icons.filter)),
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> GetInCompletedTask()));
+          }, icon: Icon(Icons.incomplete_circle)),
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> GetCompletedTask()));
+          }, icon: Icon(Icons.circle)),
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> GetProfile()));
+          }, icon: Icon(Icons.person)),
+        ],
       ),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateTask()));
+      },child: Icon(Icons.add),),
       body: FutureProvider.value(
           value: TaskServices().getAllTask(userProvider.getToken().toString()),
-          initialData: [TaskModel()],
+          initialData: [TaskListingModel()],
           builder: (context, child){
             TaskListingModel taskListingModel = context.watch<TaskListingModel>();
             return taskListingModel.tasks == null ?
